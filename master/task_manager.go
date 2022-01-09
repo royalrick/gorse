@@ -15,11 +15,12 @@
 package master
 
 import (
-	"github.com/scylladb/go-set/strset"
-	"github.com/zhenghaoz/gorse/model"
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/scylladb/go-set/strset"
+	"github.com/zhenghaoz/gorse/model"
 )
 
 type TaskStatus string
@@ -168,13 +169,14 @@ func (t Tasks) Swap(i, j int) {
 
 // Less is used to sort []Task.
 func (t Tasks) Less(i, j int) bool {
-	if t[i].Status != TaskStatusPending && t[j].Status == TaskStatusPending {
+	switch {
+	case t[i].Status != TaskStatusPending && t[j].Status == TaskStatusPending:
 		return true
-	} else if t[i].Status == TaskStatusPending && t[j].Status != TaskStatusPending {
+	case t[i].Status == TaskStatusPending && t[j].Status != TaskStatusPending:
 		return false
-	} else if t[i].Status == TaskStatusPending && t[j].Status == TaskStatusPending {
+	case t[i].Status == TaskStatusPending && t[j].Status == TaskStatusPending:
 		return t[i].Name < t[j].Name
-	} else {
+	default:
 		return t[i].StartTime.Before(t[j].StartTime)
 	}
 }
